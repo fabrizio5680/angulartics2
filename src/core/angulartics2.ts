@@ -67,22 +67,8 @@ export class Angulartics2 {
    */
   public userTimings: ReplaySubject<any> = new ReplaySubject();
 
-  constructor(location: Location, router: Router) {
-    this.trackLocation(location, router);
-  }
-
-  trackLocation(location: Location, router: Router) {
-    router.events
-      .filter(event => event instanceof NavigationEnd)
-      .subscribe((event: NavigationEnd) => {
-        if (!this.settings.developerMode) {
-          this.trackUrlChange(event.urlAfterRedirects, location);
-        }
-      });
-
-    if (!this.settings.developerMode) {
-      this.trackUrlChange(location.path(), location);
-    }
+  constructor() {
+    // this.trackLocation(location, router);
   }
 
   virtualPageviews(value: boolean) {
@@ -91,33 +77,8 @@ export class Angulartics2 {
   excludeRoutes(routes: Array<string>) {
     this.settings.pageTracking.excludedRoutes = routes;
   }
-  firstPageview(value: boolean) {
-    this.settings.pageTracking.autoTrackFirstPage = value;
-  }
-  withBase(value: string) {
-    this.settings.pageTracking.basePath = (value);
-  }
+
   developerMode(value: boolean) {
     this.settings.developerMode = value;
-  }
-  
-  protected trackUrlChange(url: string, location: Location) {
-    if (!this.settings.developerMode) {
-      if (this.settings.pageTracking.autoTrackVirtualPages && !this.matchesExcludedRoute(url)) {
-        this.pageTrack.next({
-          path: this.settings.pageTracking.basePath.length ? this.settings.pageTracking.basePath + url : location.prepareExternalUrl(url),
-          location: location
-        });
-      }
-    }
-  }
-
-  protected matchesExcludedRoute(url: string): boolean {
-    for (let excludedRoute of this.settings.pageTracking.excludedRoutes) {
-      if ((excludedRoute instanceof RegExp && excludedRoute.test(url)) || url.indexOf(excludedRoute) > -1) {
-        return true;
-      }
-    }
-    return false;
   }
 }
